@@ -1,0 +1,373 @@
+ {
+  "tray_export_version": 4,
+  "export_type": "workflow",
+  "workflows": [
+    {
+      "id": "7b6a1748-6e5b-4181-adbd-9b21344431ba",
+      "created": "2021-10-20T12:52:14.993Z",
+      "workspace_id": "7de0221f-ff95-4544-803a-ae288b50c77e",
+      "creator": "7de0221f-ff95-4544-803a-ae288b50c77e",
+      "version": {
+        "id": "f3cd6453-32d4-471b-98de-31c7b9a64c09",
+        "created": "2021-10-20T13:14:50.830Z"
+      },
+      "title": "[Demo] Google Big Query ETL - Batch Insert 2",
+      "enabled": true,
+      "tags": [],
+      "settings": {
+        "config": {},"input_schema": {
+          "type": "object",
+          "properties": {
+            "batch": {
+              "title": "Batch",
+              "description": "Is the array of data you wish to insert into BigQuery",
+              "type": "array",
+              "items": {
+                "type": "Object",
+                "title": "Data Object"
+              },
+              "additionalItems": true
+            },
+            "keyMappings": {
+              "title": "Key Mappings",
+              "type": "array",
+              "items": {
+                "title": "Mapping",
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "title": "From"
+                  },
+                  "to": {
+                    "title": "To",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [],
+                "advanced": []
+              },
+              "additionalItems": true
+            },
+            "projectId": {
+              "title": "Project ID",
+              "description": "BigQuery Project ID can be found in their admin or by conducting a test insert rows operation and looking at input logs.",
+              "type": "string"
+            },
+            "datasetId": {
+              "title": "Dataset ID",
+              "description": "BigQuery Dataset ID can be found in their admin or by conducting a test insert rows operation and looking at input logs.",
+              "type": "string"
+            },
+            "tableId": {
+              "title": "Table ID",
+              "description": "BigQuery Table ID can be found in their admin or by conducting a test insert rows operation and looking at input logs.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "advanced": []
+        },
+        "output_schema": {}
+      },
+      "steps_structure": [
+        {
+          "name": "trigger",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "loop-1",
+          "type": "loop",
+          "content": {
+            "_loop": [
+              {
+                "name": "data-mapper-1",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "storage-1",
+                "type": "normal",
+                "content": {}
+              }
+            ]
+          }
+        },
+        {
+          "name": "storage-2",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "bigquery-1",
+          "type": "normal",
+          "content": {}
+        }
+      ],
+      "steps": {
+        "data-mapper-1": {
+          "title": "Map keys to bigQuery columns",
+          "connector": {
+            "name": "data-mapper",
+            "version": "3.5"
+          },
+          "operation": "map_keys",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "object1": {
+              "type": "jsonpath",
+              "value": "$.steps.loop-1.value"
+            },
+            "mappings": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.keyMappings"
+            }
+          }
+        },
+        "bigquery-1": {
+          "title": "Insert rows",
+          "connector": {
+            "name": "bigquery",
+            "version": "3.5"
+          },
+          "operation": "insert_rows",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "project_id": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.projectId"
+            },
+            "dataset_id": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.datasetId"
+            },
+            "table_id": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.tableId"
+            },
+            "rows": {
+              "type": "jsonpath",
+              "value": "$.steps.storage-2.value"
+            }
+          }
+        },
+        "storage-2": {
+          "title": "Get our list",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "get",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "wasHam": {
+                          "type": "boolean"
+                        },
+                        "ID": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "data"
+            },
+            "default_value": {
+              "type": "null",
+              "value": null
+            }
+          }
+        },
+        "loop-1": {
+          "title": "For each row of data",
+          "connector": {
+            "name": "loop",
+            "version": "1.1"
+          },
+          "operation": "loop_array",
+          "output_schema": {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-03/schema",
+            "id": "http://jsonschema.net",
+            "required": true,
+            "additionalProperties": false,
+            "properties": {
+              "count": {
+                "type": "number",
+                "id": "http://jsonschema.net/total"
+              },
+              "index": {
+                "type": "number",
+                "id": "http://jsonschema.net/index"
+              },
+              "is_first": {
+                "type": "boolean",
+                "id": "http://jsonschema.net/is_first"
+              },
+              "is_last": {
+                "type": "boolean",
+                "id": "http://jsonschema.net/is_last"
+              },
+              "value": {
+                "type": "object",
+                "properties": {
+                  "isHam": {
+                    "type": "boolean"
+                  },
+                  "id": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "isHam",
+                  "id"
+                ]
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "array": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.batch"
+            }
+          }
+        },
+        "storage-1": {
+          "title": "Save item in list",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "append_to_list",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "data"
+            },
+            "create_if_missing": {
+              "type": "boolean",
+              "value": true
+            },
+            "value": {
+              "type": "object",
+              "value": {
+                "data": {
+                  "type": "jsonpath",
+                  "value": "$.steps.data-mapper-1"
+                }
+              }
+            }
+          }
+        },
+        "trigger": {
+          "title": "Callable Trigger",
+          "connector": {
+            "name": "callable-trigger",
+            "version": "2.0"
+          },
+          "operation": "trigger",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "#calling_execution": {
+                "type": "string"
+              },
+              "#calling_workflow": {
+                "type": "string"
+              },
+              "batch": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "isHam": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "isHam",
+                    "id"
+                  ]
+                }
+              },
+              "tableId": {
+                "type": "string"
+              },
+              "datasetId": {
+                "type": "string"
+              },
+              "#calling_execution_log_url": {
+                "type": "string"
+              },
+              "projectId": {
+                "type": "string"
+              },
+              "keyMappings": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "string"
+                    },
+                    "to": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to"
+                  ]
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {}
+        }
+      },
+      "dependencies": []
+    }
+  ],
+  "projects": []
+}

@@ -1,0 +1,240 @@
+ {
+  "tray_export_version": 4,
+  "export_type": "workflow",
+  "workflows": [
+    {
+      "id": "3f8d2a9c-c8d0-4570-9a9f-5b4096da1ec6",
+      "created": "2021-10-20T12:51:50.822Z",
+      "workspace_id": "7de0221f-ff95-4544-803a-ae288b50c77e",
+      "creator": "7de0221f-ff95-4544-803a-ae288b50c77e",
+      "version": {
+        "id": "7e03c608-d5bd-499d-8d7b-d7acec0005ad",
+        "created": "2021-10-20T13:17:26.461Z"
+      },
+      "title": "[Demo] Google Big Query ETL - Orchestration 2",
+      "enabled": true,
+      "tags": [],
+      "settings": {
+        "config": {},
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "title": "Data",
+              "type": "array",
+              "items": {
+                "title": "Item",
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false,
+                "required": [],
+                "advanced": []
+              },
+              "additionalItems": true
+            },
+            "batchSize": {
+              "title": "Batch Size",
+              "type": "integer"
+            },
+            "keyMappings": {
+              "title": "Key Mappings",
+              "type": "array",
+              "items": {
+                "title": "Mapping",
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "title": "From"
+                  },
+                  "to": {
+                    "title": "To",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [],
+                "advanced": []
+              },
+              "additionalItems": true
+            },
+            "projectId": {
+              "title": "Project ID",
+              "type": "string"
+            },
+            "datasetId": {
+              "title": "Dataset ID",
+              "type": "string"
+            },
+            "tableId": {
+              "title": "Table ID",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "advanced": []
+        },
+        "output_schema": {}
+      },
+      "steps_structure": [
+        {
+          "name": "trigger",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "list-helpers-1",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "loop-2",
+          "type": "loop",
+          "content": {
+            "_loop": [
+              {
+                "name": "script-1",
+                "type": "normal",
+                "content": {}
+              }
+            ]
+          }
+        },
+        {
+          "name": "callable-workflow-response-1",
+          "type": "normal",
+          "content": {}
+        }
+      ],
+      "steps": {
+        "script-1": {
+          "title": "READ ME, then delete",
+          "description": "After you import your batch workflow, place a callable w/ \"fire and forget\" as the operation and add vars required to it's input.",
+          "connector": {
+            "name": "script",
+            "version": "3.1"
+          },
+          "operation": "execute",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "variables": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "foo"
+                    },
+                    "value": {
+                      "type": "string",
+                      "value": "bar"
+                    }
+                  }
+                }
+              ]
+            },
+            "script": {
+              "type": "string",
+              "value": "// You can reference the input variables using input.NAME\n// Parsed JSON files could be referenced as fileInput\nexports.step = function(input, fileInput) {\n\treturn input.foo;\n};"
+            },
+            "file_output": {
+              "type": "boolean",
+              "value": false
+            }
+          }
+        },
+        "callable-workflow-response-1": {
+          "title": "Callable response",
+          "connector": {
+            "name": "callable-workflow-response",
+            "version": "1.0"
+          },
+          "operation": "response",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {}
+        },
+        "list-helpers-1": {
+          "title": "Create batches",
+          "connector": {
+            "name": "list-helpers",
+            "version": "2.1"
+          },
+          "operation": "chunk",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.data"
+            },
+            "size": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.batchSize"
+            }
+          }
+        },
+        "loop-2": {
+          "title": "For each batch",
+          "connector": {
+            "name": "loop",
+            "version": "1.1"
+          },
+          "operation": "loop_array",
+          "output_schema": {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-03/schema",
+            "id": "http://jsonschema.net",
+            "required": true,
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": "array"
+              },
+              "count": {
+                "type": "number",
+                "id": "http://jsonschema.net/total"
+              },
+              "index": {
+                "type": "number",
+                "id": "http://jsonschema.net/index"
+              },
+              "is_first": {
+                "type": "boolean",
+                "id": "http://jsonschema.net/is_first"
+              },
+              "is_last": {
+                "type": "boolean",
+                "id": "http://jsonschema.net/is_last"
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "array": {
+              "type": "jsonpath",
+              "value": "$.steps.list-helpers-1.result"
+            }
+          }
+        },
+        "trigger": {
+          "title": "Callable Trigger",
+          "connector": {
+            "name": "callable-trigger",
+            "version": "2.0"
+          },
+          "operation": "trigger_and_respond",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {}
+        }
+      },
+      "dependencies": []
+    }
+  ],
+  "projects": []
+}
