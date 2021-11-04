@@ -1,0 +1,360 @@
+ {
+  "tray_export_version": 4,
+  "export_type": "workflow",
+  "workflows": [
+    {
+      "id": "0877f5b5-3e56-49a7-9e4f-d97ea742f318",
+      "created": "2021-11-03T21:19:36.912Z",
+      "workspace_id": "e7f3dc95-0d17-407a-88d5-948ba148b779",
+      "creator": "5b45c575-90ed-492d-bdc8-661ae4f40dfb",
+      "version": {
+        "id": "fce5040d-b60f-4f3e-a9b2-d681905f896e",
+        "created": "2021-11-04T13:39:52.790Z"
+      },
+      "title": "[CSVs] Utility - Add data to CSV and get downloadable URL",
+      "enabled": true,
+      "tags": [],
+      "settings": {
+        "config": {},
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "title": "Data",
+              "description": "An array or list of data (aka - collection of objects) that you wish to import into the CSV",
+              "type": "array",
+              "items": {
+                "title": "Item",
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false,
+                "required": [],
+                "advanced": []
+              },
+              "additionalItems": true
+            },
+            "fileName": {
+              "title": "File Name",
+              "type": "string",
+              "description": "The name you wish to call your CSV"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "data",
+            "fileName"
+          ],
+          "advanced": []
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "file": {
+              "title": "File",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "title": "Name",
+                  "type": "string"
+                },
+                "url": {
+                  "title": "URL",
+                  "type": "string"
+                },
+                "mime_type": {
+                  "title": "mime_type",
+                  "type": "string"
+                },
+                "expires": {
+                  "title": "expires",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [],
+              "advanced": []
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "advanced": []
+        }
+      },
+      "steps_structure": [
+        {
+          "name": "trigger",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "csv-1",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "csv-2",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "data-mapper-1",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "csv-3",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "csv-4",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "callable-workflow-response-1",
+          "type": "normal",
+          "content": {}
+        }
+      ],
+      "steps": {
+        "data-mapper-1": {
+          "title": "Null->Empty String",
+          "description": "Null values can message up formatting in CSV",
+          "connector": {
+            "name": "data-mapper",
+            "version": "3.5"
+          },
+          "operation": "map_values",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Name": {
+                      "type": "string"
+                    },
+                    "Email": {
+                      "type": "string"
+                    },
+                    "Status": {
+                      "type": "string"
+                    },
+                    "LeadSource": {
+                      "type": "string"
+                    },
+                    "Most_Recent_Inbound_Date__c": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Name",
+                    "Email",
+                    "Status",
+                    "LeadSource",
+                    "Most_Recent_Inbound_Date__c"
+                  ]
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "input": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.data"
+            },
+            "mappings": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "from": {
+                      "type": "null",
+                      "value": null
+                    },
+                    "to": {
+                      "type": "string",
+                      "value": ""
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "csv-4": {
+          "title": "Export CSV",
+          "description": "Creates an empty CSV shell",
+          "connector": {
+            "name": "csv",
+            "version": "7.0"
+          },
+          "operation": "export_csv",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "id": {
+              "type": "jsonpath",
+              "value": "$.steps.csv-2.id"
+            },
+            "include_header": {
+              "type": "boolean",
+              "value": true
+            },
+            "delimiter": {
+              "type": "string",
+              "value": "comma"
+            },
+            "escape_char": {
+              "type": "string",
+              "value": "\""
+            },
+            "enclose_char": {
+              "type": "string",
+              "value": "\""
+            },
+            "force_enclose": {
+              "type": "boolean",
+              "value": true
+            },
+            "enclose_headers": {
+              "type": "boolean",
+              "value": false
+            },
+            "name": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.fileName"
+            }
+          }
+        },
+        "callable-workflow-response-1": {
+          "title": "Callable response",
+          "connector": {
+            "name": "callable-workflow-response",
+            "version": "1.0"
+          },
+          "operation": "response",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "response": {
+              "type": "object",
+              "value": {
+                "file": {
+                  "type": "jsonpath",
+                  "value": "$.steps.csv-4.file"
+                }
+              }
+            }
+          }
+        },
+        "csv-3": {
+          "title": "Add data to CSV",
+          "description": "Creates an empty CSV shell",
+          "connector": {
+            "name": "csv",
+            "version": "7.0"
+          },
+          "operation": "add_rows",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "validate_columns": {
+              "type": "boolean",
+              "value": true
+            },
+            "default_value": {
+              "type": "null",
+              "value": null
+            },
+            "stringify_boolean": {
+              "type": "boolean",
+              "value": true
+            },
+            "allow_null": {
+              "type": "boolean",
+              "value": false
+            },
+            "id": {
+              "type": "jsonpath",
+              "value": "$.steps.csv-2.id"
+            },
+            "rows": {
+              "type": "jsonpath",
+              "value": "$.steps.data-mapper-1.output"
+            }
+          }
+        },
+        "csv-1": {
+          "title": "Generate columns",
+          "description": "This looks at the first item in your data array and creates the necessary inputs for your CSV create step.",
+          "connector": {
+            "name": "csv",
+            "version": "7.0"
+          },
+          "operation": "generate_columns_from_object",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "object": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.data[0]"
+            }
+          }
+        },
+        "csv-2": {
+          "title": "Create CSV",
+          "description": "Creates an empty CSV shell",
+          "connector": {
+            "name": "csv",
+            "version": "7.0"
+          },
+          "operation": "create_in_memory_csv",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "current_run"
+            },
+            "number_of_columns": {
+              "type": "jsonpath",
+              "value": "$.steps.csv-1.result.number_of_columns"
+            },
+            "number_of_rows": {
+              "type": "integer",
+              "value": 0
+            },
+            "use_utf8": {
+              "type": "boolean",
+              "value": false
+            },
+            "columns": {
+              "type": "jsonpath",
+              "value": "$.steps.csv-1.result.columns"
+            }
+          }
+        },
+        "trigger": {
+          "title": "Callable Trigger",
+          "connector": {
+            "name": "callable-trigger",
+            "version": "2.0"
+          },
+          "operation": "trigger_and_respond",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {}
+        }
+      },
+      "dependencies": []
+    }
+  ],
+  "projects": []
+}
