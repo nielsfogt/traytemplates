@@ -1,0 +1,395 @@
+ {
+  "tray_export_version": 4,
+  "export_type": "workflow",
+  "workflows": [
+    {
+      "id": "bf2d2156-484c-4dad-8dc3-58719cb718a5",
+      "created": "2022-01-08T18:34:16.357876Z",
+      "workspace_id": "26c4dc21-3da9-4ac7-8d3e-ecaed4467e93",
+      "creator": "dec5bad5-50bb-4558-a70b-c45b28bec87c",
+      "version": {
+        "id": "38406e86-5797-430a-8453-3b339531bc0a",
+        "created": "2022-01-09T19:52:07.403909Z"
+      },
+      "title": "OpenOps: Routing Queue Intake Example",
+      "enabled": true,
+      "tags": [],
+      "settings": {
+        "config": {},
+        "input_schema": {},
+        "output_schema": {}
+      },
+      "steps_structure": [
+        {
+          "name": "trigger",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "branch-1",
+          "type": "branch",
+          "content": {
+            "__default__": [
+              {
+                "name": "boolean-condition-2",
+                "type": "branch",
+                "content": {
+                  "true": [
+                    {
+                      "name": "storage-1",
+                      "type": "normal",
+                      "content": {}
+                    },
+                    {
+                      "name": "trigger-reply-2",
+                      "type": "normal",
+                      "content": {}
+                    }
+                  ],
+                  "false": [
+                    {
+                      "name": "trigger-reply-3",
+                      "type": "normal",
+                      "content": {}
+                    }
+                  ]
+                }
+              }
+            ],
+            "branch1": [
+              {
+                "name": "trigger-reply-1",
+                "type": "normal",
+                "content": {}
+              }
+            ]
+          }
+        }
+      ],
+      "steps": {
+        "branch-1": {
+          "title": "Request state",
+          "connector": {
+            "name": "branch",
+            "version": "1.1"
+          },
+          "operation": "simple",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "value": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.body.state",
+              "fallback": {
+                "type": "string",
+                "value": "Fallback, no state set"
+              }
+            },
+            "branches": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "value": {
+                      "type": "string",
+                      "value": "initialize"
+                    },
+                    "label": {
+                      "type": "string",
+                      "value": "initialize"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "trigger-reply-2": {
+          "title": "Trigger event reply",
+          "connector": {
+            "name": "trigger-reply",
+            "version": "1.0"
+          },
+          "operation": "trigger-reply",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "body": {
+              "type": "object",
+              "value": {
+                "success": {
+                  "type": "boolean",
+                  "value": true
+                },
+                "workflow": {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "jsonpath",
+                      "value": "$.env.workflow_title"
+                    },
+                    "uuid": {
+                      "type": "jsonpath",
+                      "value": "$.env.workflow_uuid"
+                    }
+                  }
+                }
+              }
+            },
+            "status": {
+              "type": "number",
+              "value": 200
+            }
+          }
+        },
+        "boolean-condition-2": {
+          "title": "Has data?",
+          "description": "Just checks that the first member ID exists as a failsafe -- you can tech remove this if you want",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "property_exists",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "property": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.body.queue[0].id"
+            }
+          }
+        },
+        "trigger-reply-1": {
+          "title": "Trigger event reply",
+          "connector": {
+            "name": "trigger-reply",
+            "version": "1.0"
+          },
+          "operation": "trigger-reply",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "body": {
+              "type": "object",
+              "value": {
+                "success": {
+                  "type": "boolean",
+                  "value": true
+                },
+                "workflow": {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "jsonpath",
+                      "value": "$.env.workflow_title"
+                    },
+                    "uuid": {
+                      "type": "jsonpath",
+                      "value": "$.env.workflow_uuid"
+                    }
+                  }
+                }
+              }
+            },
+            "status": {
+              "type": "number",
+              "value": 200
+            }
+          }
+        },
+        "storage-1": {
+          "title": "Store queue members",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "set",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Account"
+            },
+            "key": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.body.sys.namespace"
+            },
+            "value": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.body"
+            }
+          }
+        },
+        "trigger-reply-3": {
+          "title": "Err: No data",
+          "connector": {
+            "name": "trigger-reply",
+            "version": "1.0"
+          },
+          "operation": "trigger-reply",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "body": {
+              "type": "object",
+              "value": {
+                "success": {
+                  "type": "boolean",
+                  "value": false
+                },
+                "workflow": {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "jsonpath",
+                      "value": "$.env.workflow_title"
+                    },
+                    "uuid": {
+                      "type": "jsonpath",
+                      "value": "$.env.workflow_uuid"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "value": "Members list is empty"
+                }
+              }
+            },
+            "status": {
+              "type": "number",
+              "value": 400
+            }
+          }
+        },
+        "trigger": {
+          "title": "Intake queues request",
+          "connector": {
+            "name": "webhook",
+            "version": "2.3"
+          },
+          "operation": "webhook_with_response",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "body": {
+                "type": "object",
+                "properties": {
+                  "queue": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "email"
+                      ]
+                    }
+                  },
+                  "sys": {
+                    "type": "object",
+                    "properties": {
+                      "createdDate": {
+                        "type": "string"
+                      },
+                      "modifiedDate": {
+                        "type": "string"
+                      },
+                      "settingName": {
+                        "type": "string"
+                      },
+                      "workflowName": {
+                        "type": "string"
+                      },
+                      "namespace": {
+                        "type": "string"
+                      },
+                      "queueId": {
+                        "type": "string"
+                      },
+                      "syncDateUtc": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "query": {
+                "type": "object",
+                "properties": {}
+              },
+              "headers": {
+                "type": "object",
+                "properties": {
+                  "accept": {
+                    "type": "string"
+                  },
+                  "content-length": {
+                    "type": "string"
+                  },
+                  "content-type": {
+                    "type": "string"
+                  },
+                  "host": {
+                    "type": "string"
+                  },
+                  "user-agent": {
+                    "type": "string"
+                  },
+                  "x-amzn-trace-id": {
+                    "type": "string"
+                  },
+                  "x-csrf-token": {
+                    "type": "string"
+                  },
+                  "x-forwarded-for": {
+                    "type": "string"
+                  },
+                  "x-forwarded-port": {
+                    "type": "string"
+                  },
+                  "x-forwarded-proto": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "allow_cors": {
+              "type": "boolean",
+              "value": false
+            },
+            "token": {
+              "type": "string",
+              "value": "23upwjc189jdopijp289j3coij2p198j"
+            }
+          }
+        }
+      },
+      "dependencies": []
+    }
+  ],
+  "projects": []
+}
