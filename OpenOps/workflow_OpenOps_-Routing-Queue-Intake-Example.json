@@ -380,10 +380,6 @@
             "allow_cors": {
               "type": "boolean",
               "value": false
-            },
-            "token": {
-              "type": "string",
-              "value": null
             }
           }
         }
