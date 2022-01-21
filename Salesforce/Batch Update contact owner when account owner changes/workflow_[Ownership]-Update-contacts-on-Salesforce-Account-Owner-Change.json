@@ -1,0 +1,695 @@
+ {
+  "tray_export_version": 4,
+  "export_type": "workflow",
+  "workflows": [
+    {
+      "id": "0171825a-13f0-4239-a5b4-50efbcd0828e",
+      "created": "2022-01-21T22:19:55.068946Z",
+      "workspace_id": "ed3b3dbe-9758-4e88-87bb-c801a7ea1115",
+      "creator": "7de0221f-ff95-4544-803a-ae288b50c77e",
+      "version": {
+        "id": "24dc179e-f5f2-4c2f-8e25-49d5ae360e95",
+        "created": "2022-01-21T23:13:17.620306Z"
+      },
+      "title": "[Ownership] Update contacts on Salesforce Account Owner Change",
+      "enabled": true,
+      "tags": [],
+      "settings": {
+        "config": {},
+        "input_schema": {},
+        "output_schema": {}
+      },
+      "steps_structure": [
+        {
+          "name": "trigger",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "loop-3",
+          "type": "loop",
+          "content": {
+            "_loop": [
+              {
+                "name": "salesforce-2",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "loop-1",
+                "type": "loop",
+                "content": {
+                  "_loop": [
+                    {
+                      "name": "storage-1",
+                      "type": "normal",
+                      "content": {}
+                    },
+                    {
+                      "name": "salesforce-1",
+                      "type": "normal",
+                      "content": {}
+                    },
+                    {
+                      "name": "boolean-condition-2",
+                      "type": "branch",
+                      "content": {
+                        "true": [
+                          {
+                            "name": "script-1",
+                            "type": "normal",
+                            "content": {}
+                          },
+                          {
+                            "name": "salesforce-3",
+                            "type": "normal",
+                            "content": {}
+                          }
+                        ],
+                        "false": []
+                      }
+                    },
+                    {
+                      "name": "boolean-condition-1",
+                      "type": "branch",
+                      "content": {
+                        "true": [
+                          {
+                            "name": "break-loop-2",
+                            "type": "break",
+                            "content": {},
+                            "target": "loop-1"
+                          }
+                        ],
+                        "false": []
+                      }
+                    },
+                    {
+                      "name": "storage-2",
+                      "type": "normal",
+                      "content": {}
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": {
+        "salesforce-3": {
+          "title": "Batch Update contact owners",
+          "connector": {
+            "name": "salesforce",
+            "version": "8.6"
+          },
+          "operation": "batch_update_records",
+          "output_schema": {},
+          "error_handling": {},
+          "authentication": {
+            "group": "f3bf0fff-82bd-415c-9c12-a679f644764c",
+            "title": "RevOps - Salesforce Sandbox Auth",
+            "service_icon": {
+              "icon_type": "url",
+              "value": "//s3.amazonaws.com/images.tray.io/static/service/icons/a8ff6c9514c35c853b350382534fb624.png"
+            },
+            "scopes": [
+              "refresh_token",
+              "full"
+            ],
+            "service_name": "salesforce",
+            "service_version": 1
+          },
+          "properties": {
+            "object": {
+              "type": "string",
+              "value": "Contact"
+            },
+            "error_handling": {
+              "type": "string",
+              "value": "rollback_fail"
+            },
+            "batch_update_list": {
+              "type": "jsonpath",
+              "value": "$.steps.script-1.result"
+            }
+          }
+        },
+        "script-1": {
+          "title": "Create batch request",
+          "connector": {
+            "name": "script",
+            "version": "3.2"
+          },
+          "operation": "execute",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "variables": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "contacts"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.salesforce-1.records"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "OwnerId"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.salesforce-2.records[0].Owner.Id"
+                    }
+                  }
+                }
+              ]
+            },
+            "script": {
+              "type": "string",
+              "value": "// You can reference the input variables using input.NAME\n// Parsed JSON files could be referenced as fileInput\nexports.step = function(input, fileInput) {\n\treturn input.contacts.map(contact=>{\n \t\treturn {\n\t\t\t\"fields\": [\n\t\t\t\t{\n\t\t\t\t\t\"key\": \"OwnerId\",\n\t\t\t\t\t\"value\": input.OwnerId\n\t\t\t\t}\n\t\t\t],\n\t\t\t\"object_id\": contact.Id\n\t\t}\n\t});\n};"
+            },
+            "file_output": {
+              "type": "boolean",
+              "value": false
+            }
+          }
+        },
+        "boolean-condition-2": {
+          "title": "Has contacts?",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "boolean_condition",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "value1": {
+                      "type": "jsonpath",
+                      "value": "$.steps.salesforce-1.total"
+                    },
+                    "comparison_type": {
+                      "type": "string",
+                      "value": ">"
+                    },
+                    "value2": {
+                      "type": "number",
+                      "value": 0
+                    }
+                  }
+                }
+              ]
+            },
+            "strictness": {
+              "type": "string",
+              "value": "All"
+            }
+          }
+        },
+        "loop-1": {
+          "title": "Until no more pages",
+          "connector": {
+            "name": "loop",
+            "version": "1.1"
+          },
+          "operation": "loop_forever",
+          "output_schema": {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-03/schema",
+            "id": "http://jsonschema.net",
+            "required": true,
+            "properties": {
+              "index": {
+                "type": "number",
+                "id": "http://jsonschema.net/index"
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {}
+        },
+        "boolean-condition-1": {
+          "title": "No More Pages?",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "boolean_condition",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "value1": {
+                      "type": "jsonpath",
+                      "value": "$.steps.salesforce-1.next_page_offset"
+                    },
+                    "comparison_type": {
+                      "type": "string",
+                      "value": "==="
+                    },
+                    "value2": {
+                      "type": "null",
+                      "value": null
+                    }
+                  }
+                }
+              ]
+            },
+            "strictness": {
+              "type": "string",
+              "value": "All"
+            }
+          }
+        },
+        "break-loop-2": {
+          "title": "Break Loop 1",
+          "connector": {
+            "name": "break-loop",
+            "version": "1.0"
+          },
+          "operation": "break",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {}
+        },
+        "salesforce-1": {
+          "title": "Get page of contacts",
+          "connector": {
+            "name": "salesforce",
+            "version": "8.2"
+          },
+          "operation": "find_records",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "title": "Total count"
+              },
+              "next_page_offset": {
+                "type": "string",
+                "title": "Next page offset"
+              },
+              "records": {
+                "title": "Contacts",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "title": "Contact",
+                  "properties": {
+                    "Id": {
+                      "name": "Id",
+                      "type": "string",
+                      "title": "Contact ID"
+                    },
+                    "Email": {
+                      "name": "Email",
+                      "type": "string",
+                      "title": "Email"
+                    },
+                    "OwnerId": {
+                      "name": "OwnerId",
+                      "type": "string",
+                      "title": "Owner ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "authentication": {
+            "group": "f3bf0fff-82bd-415c-9c12-a679f644764c",
+            "title": "RevOps - Salesforce Sandbox Auth",
+            "service_icon": {
+              "icon_type": "url",
+              "value": "//s3.amazonaws.com/images.tray.io/static/service/icons/a8ff6c9514c35c853b350382534fb624.png"
+            },
+            "scopes": [
+              "refresh_token",
+              "full"
+            ],
+            "service_name": "salesforce",
+            "service_version": 1
+          },
+          "properties": {
+            "conditions_type": {
+              "type": "string",
+              "value": "Match all conditions"
+            },
+            "include_all_fields": {
+              "type": "boolean",
+              "value": false
+            },
+            "fields": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "string",
+                  "value": "Id"
+                },
+                {
+                  "type": "string",
+                  "value": "Email"
+                },
+                {
+                  "type": "string",
+                  "value": "OwnerId"
+                }
+              ]
+            },
+            "page_offset": {
+              "type": "jsonpath",
+              "value": "$.steps.storage-1.value"
+            },
+            "object": {
+              "type": "string",
+              "value": "Contact"
+            },
+            "conditions": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "field": {
+                      "type": "string",
+                      "value": "AccountId"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "value": "Equal to"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.loop-3.value.Id"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "field": {
+                      "type": "string",
+                      "value": "OwnerId"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "value": "Not equal to"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.salesforce-2.records[0].Owner.Id"
+                    }
+                  }
+                }
+              ]
+            },
+            "limit": {
+              "type": "number",
+              "value": 200
+            }
+          }
+        },
+        "storage-1": {
+          "title": "Get Offset",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "get",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "default_value": {
+              "type": "null",
+              "value": null
+            },
+            "key": {
+              "type": "string",
+              "value": "sfdc_offset"
+            }
+          }
+        },
+        "salesforce-2": {
+          "title": "Get acct/owner data",
+          "connector": {
+            "name": "salesforce",
+            "version": "8.6"
+          },
+          "operation": "query",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "next_page_offset": {
+                "type": "null"
+              },
+              "records": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Owner": {
+                      "type": "object",
+                      "properties": {
+                        "attributes": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "url": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "Id": {
+                          "type": "string"
+                        },
+                        "Email": {
+                          "type": "string"
+                        },
+                        "Name": {
+                          "type": "string"
+                        },
+                        "IsActive": {
+                          "type": "boolean"
+                        },
+                        "Title": {
+                          "type": "string"
+                        },
+                        "UserType": {
+                          "type": "string"
+                        },
+                        "User_Team_Region__c": {
+                          "type": "string"
+                        },
+                        "User_Team__c": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "Name": {
+                      "type": "string"
+                    },
+                    "Account_Status__c": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "authentication": {
+            "group": "f3bf0fff-82bd-415c-9c12-a679f644764c",
+            "title": "RevOps - Salesforce Sandbox Auth",
+            "service_icon": {
+              "icon_type": "url",
+              "value": "//s3.amazonaws.com/images.tray.io/static/service/icons/a8ff6c9514c35c853b350382534fb624.png"
+            },
+            "scopes": [
+              "refresh_token",
+              "full"
+            ],
+            "service_name": "salesforce",
+            "service_version": 1
+          },
+          "properties": {
+            "query": {
+              "type": "string",
+              "value": "select\n  Owner.Id\n  , Owner.Email\n  , Owner.Name\n  , Owner.IsActive\n  , Owner.Title\n\t, Owner.UserType\n\t, Owner.User_Team_Region__c\n\t, Owner.User_Team__c\n  , Name\n \t, Account_Status__c\nfrom\n\tAccount\nwhere\n\tId = '{$.steps.loop-3.value.Id}'"
+            }
+          }
+        },
+        "trigger": {
+          "title": "On Acct owner change / create",
+          "connector": {
+            "name": "salesforce-notification",
+            "version": "2.12"
+          },
+          "operation": "record_field_change",
+          "output_schema": {},
+          "error_handling": {},
+          "authentication": {
+            "group": "f3bf0fff-82bd-415c-9c12-a679f644764c",
+            "title": "RevOps - Salesforce Sandbox Auth",
+            "service_icon": {
+              "icon_type": "url",
+              "value": "//s3.amazonaws.com/images.tray.io/static/service/icons/a8ff6c9514c35c853b350382534fb624.png"
+            },
+            "scopes": [
+              "refresh_token",
+              "full"
+            ],
+            "service_name": "salesforce",
+            "service_version": 1
+          },
+          "properties": {
+            "access_token": {
+              "type": "jsonpath",
+              "value": "$.auth.access_token"
+            },
+            "instance_url": {
+              "type": "jsonpath",
+              "value": "$.auth.instance_url"
+            },
+            "object_prefix": {
+              "type": "string",
+              "value": "Tray"
+            },
+            "public_url": {
+              "type": "jsonpath",
+              "value": "$.env.public_url"
+            },
+            "identity_url": {
+              "type": "jsonpath",
+              "value": "$.auth.id"
+            },
+            "include_created_records": {
+              "type": "boolean",
+              "value": true
+            },
+            "object": {
+              "type": "string",
+              "value": "Account"
+            },
+            "field": {
+              "type": "string",
+              "value": "OwnerId"
+            }
+          }
+        },
+        "loop-3": {
+          "title": "For each acct",
+          "connector": {
+            "name": "loop",
+            "version": "1.2"
+          },
+          "operation": "loop_array",
+          "output_schema": {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-03/schema",
+            "id": "http://jsonschema.net",
+            "required": true,
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "string",
+                  "number",
+                  "object",
+                  "array",
+                  "boolean",
+                  "null"
+                ],
+                "id": "http://jsonschema.net/item"
+              },
+              "count": {
+                "type": "number",
+                "id": "http://jsonschema.net/total"
+              },
+              "index": {
+                "type": "number",
+                "id": "http://jsonschema.net/index"
+              },
+              "is_first": {
+                "type": "boolean",
+                "id": "http://jsonschema.net/is_first"
+              },
+              "is_last": {
+                "type": "boolean",
+                "id": "http://jsonschema.net/is_last"
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "array": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.events"
+            }
+          }
+        },
+        "storage-2": {
+          "title": "Set Offset",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "set",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "sfdc_offset"
+            },
+            "value": {
+              "type": "jsonpath",
+              "value": "$.steps.salesforce-1.next_page_offset"
+            }
+          }
+        }
+      },
+      "dependencies": []
+    }
+  ],
+  "projects": []
+}

@@ -1,0 +1,10 @@
+How to use:
+1. Upload the template to your Tray.io org
+2. Create your authentications for Salesforce, ideally a Sandbox.
+--- If you don't use a Sandbox, add a boolean check just inside the first loop to target a specific account ID.
+--- This way you won't be updating contacts for a bunch of production Salesforce accounts
+--- The other thing you can do is to add a terminate step right before the update contacts step.
+3. Enable the workflow
+4. Change an account owner on your test account, check the workflow logs
+
+Video: https://www.loom.com/share/8dd24397c3d4432db930477aa511d663
