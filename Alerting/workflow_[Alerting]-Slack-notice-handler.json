@@ -8,10 +8,10 @@
       "workspace_id": "8cae8982-4613-4c41-b565-e9111674c7bf",
       "creator": "7de0221f-ff95-4544-803a-ae288b50c77e",
       "version": {
-        "id": "ee8e2e5c-7365-4b73-a815-e0ad4ba094a7",
-        "created": "2022-01-21T18:40:21.680230Z"
+        "id": "13936d14-d37c-45df-890e-13a3a579e767",
+        "created": "2022-01-21T20:30:45.824184Z"
       },
-      "title": "[Alerting] Warning list handler 1.0",
+      "title": "[Alerting] Slack notice handler",
       "enabled": true,
       "tags": [],
       "settings": {
@@ -471,8 +471,8 @@
               "value": "alert_notice_{$.steps.trigger.data.alert.origin.workflow_uuid}"
             },
             "default_value": {
-              "type": "array",
-              "value": []
+              "type": "null",
+              "value": null
             }
           }
         },
