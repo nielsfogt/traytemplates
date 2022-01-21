@@ -1,0 +1,616 @@
+ {
+  "tray_export_version": 4,
+  "export_type": "workflow",
+  "workflows": [
+    {
+      "id": "daeb2a9b-07b1-4509-bf3e-f481c0fa586e",
+      "created": "2022-01-21T17:50:19.612353Z",
+      "workspace_id": "8cae8982-4613-4c41-b565-e9111674c7bf",
+      "creator": "7de0221f-ff95-4544-803a-ae288b50c77e",
+      "version": {
+        "id": "ee8e2e5c-7365-4b73-a815-e0ad4ba094a7",
+        "created": "2022-01-21T18:40:21.680230Z"
+      },
+      "title": "[Alerting] Warning list handler 1.0",
+      "enabled": true,
+      "tags": [],
+      "settings": {
+        "config": {},
+        "alerting_workflow_id": "5a886a2c-1e46-4894-8664-f047d57ca113",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "alert": {
+              "title": "alert",
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false,
+              "required": [],
+              "advanced": []
+            },
+            "hours": {
+              "title": "Hours before next notice?",
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "advanced": []
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "notify": {
+              "title": "Notify",
+              "description": "If true, send user a warning, if false do not send warning.",
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "advanced": []
+        }
+      },
+      "steps_structure": [
+        {
+          "name": "trigger",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "storage-1",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "boolean-condition-1",
+          "type": "branch",
+          "content": {
+            "true": [
+              {
+                "name": "date-time-helpers-1",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "date-time-helpers-2",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "boolean-condition-2",
+                "type": "branch",
+                "content": {
+                  "true": [
+                    {
+                      "name": "storage-6",
+                      "type": "normal",
+                      "content": {}
+                    }
+                  ],
+                  "false": [
+                    {
+                      "name": "storage-8",
+                      "type": "normal",
+                      "content": {}
+                    },
+                    {
+                      "name": "storage-5",
+                      "type": "normal",
+                      "content": {}
+                    }
+                  ]
+                }
+              }
+            ],
+            "false": [
+              {
+                "name": "storage-2",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "storage-4",
+                "type": "normal",
+                "content": {}
+              }
+            ]
+          }
+        },
+        {
+          "name": "storage-7",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "callable-workflow-response-1",
+          "type": "normal",
+          "content": {}
+        }
+      ],
+      "steps": {
+        "storage-2": {
+          "title": "Save wf notice",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "set",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Workflow"
+            },
+            "key": {
+              "type": "string",
+              "value": "alert_notice_{$.steps.trigger.data.alert.origin.workflow_uuid}"
+            },
+            "value": {
+              "type": "object",
+              "value": {
+                "notified_date": {
+                  "type": "jsonpath",
+                  "value": "$.env.execution_start_time"
+                },
+                "alert": {
+                  "type": "jsonpath",
+                  "value": "$.steps.trigger.data.alert"
+                }
+              }
+            }
+          }
+        },
+        "storage-5": {
+          "title": "Set result",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "set",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "result"
+            },
+            "value": {
+              "type": "object",
+              "value": {
+                "notify": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            }
+          }
+        },
+        "boolean-condition-2": {
+          "title": "Notified recently?",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "boolean_condition",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "value1": {
+                      "type": "jsonpath",
+                      "value": "$.steps.date-time-helpers-2.result"
+                    },
+                    "comparison_type": {
+                      "type": "string",
+                      "value": "==="
+                    },
+                    "value2": {
+                      "type": "boolean",
+                      "value": true
+                    }
+                  }
+                }
+              ]
+            },
+            "strictness": {
+              "type": "string",
+              "value": "All"
+            }
+          }
+        },
+        "callable-workflow-response-1": {
+          "title": "Callable response",
+          "connector": {
+            "name": "callable-workflow-response",
+            "version": "1.0"
+          },
+          "operation": "response",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "response": {
+              "type": "jsonpath",
+              "value": "$.steps.storage-7.value"
+            }
+          }
+        },
+        "storage-8": {
+          "title": "Save wf notice",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "set",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Workflow"
+            },
+            "key": {
+              "type": "string",
+              "value": "alert_notice_{$.steps.trigger.data.alert.origin.workflow_uuid}"
+            },
+            "value": {
+              "type": "object",
+              "value": {
+                "notified_date": {
+                  "type": "jsonpath",
+                  "value": "$.env.execution_start_time"
+                },
+                "alert": {
+                  "type": "jsonpath",
+                  "value": "$.steps.trigger.data.alert"
+                }
+              }
+            }
+          }
+        },
+        "storage-4": {
+          "title": "Set result",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "set",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "result"
+            },
+            "value": {
+              "type": "object",
+              "value": {
+                "notify": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            }
+          }
+        },
+        "boolean-condition-1": {
+          "title": "Found notice?",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "property_exists",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "property": {
+              "type": "jsonpath",
+              "value": "$.steps.storage-1.value.alert.origin"
+            }
+          }
+        },
+        "storage-7": {
+          "title": "Get result",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "get",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "default_value": {
+              "type": "null",
+              "value": null
+            },
+            "key": {
+              "type": "string",
+              "value": "result"
+            }
+          }
+        },
+        "date-time-helpers-1": {
+          "title": "Get notice window date",
+          "description": "This uses the days back provided to choose how long we wait to warn again.",
+          "connector": {
+            "name": "date-time-helpers",
+            "version": "3.0"
+          },
+          "operation": "minus",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "date": {
+              "type": "jsonpath",
+              "value": "$.env.execution_start_time"
+            },
+            "hours": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.hours"
+            },
+            "months": {
+              "type": "integer",
+              "value": 0
+            },
+            "business_days": {
+              "type": "integer",
+              "value": 0
+            },
+            "years": {
+              "type": "integer",
+              "value": 0
+            },
+            "minutes": {
+              "type": "integer",
+              "value": 0
+            },
+            "seconds": {
+              "type": "integer",
+              "value": 0
+            },
+            "weeks": {
+              "type": "integer",
+              "value": 0
+            },
+            "days": {
+              "type": "number",
+              "value": 0
+            }
+          }
+        },
+        "storage-1": {
+          "title": "Get last notice",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "get",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "object",
+                "properties": {
+                  "notified_date": {
+                    "type": "string"
+                  },
+                  "alert": {
+                    "type": "object",
+                    "properties": {
+                      "origin": {
+                        "type": "object",
+                        "properties": {
+                          "connector": {
+                            "type": "string"
+                          },
+                          "user_id": {
+                            "type": "string"
+                          },
+                          "step_name": {
+                            "type": "string"
+                          },
+                          "workflow_url": {
+                            "type": "string"
+                          },
+                          "step_log_url": {
+                            "type": "string"
+                          },
+                          "workflow_uuid": {
+                            "type": "string"
+                          },
+                          "workflow_title": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "error": {
+                        "type": "object",
+                        "properties": {
+                          "created": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Workflow"
+            },
+            "key": {
+              "type": "string",
+              "value": "alert_notice_{$.steps.trigger.data.alert.origin.workflow_uuid}"
+            },
+            "default_value": {
+              "type": "array",
+              "value": []
+            }
+          }
+        },
+        "storage-6": {
+          "title": "Set result",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "set",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "result"
+            },
+            "value": {
+              "type": "object",
+              "value": {
+                "notify": {
+                  "type": "boolean",
+                  "value": false
+                }
+              }
+            }
+          }
+        },
+        "date-time-helpers-2": {
+          "title": "notice date > window?",
+          "connector": {
+            "name": "date-time-helpers",
+            "version": "3.0"
+          },
+          "operation": "compare_dates",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "comparison": {
+              "type": "string",
+              "value": "IS BEFORE"
+            },
+            "resolution": {
+              "type": "string",
+              "value": ""
+            },
+            "date_a": {
+              "type": "jsonpath",
+              "value": "$.steps.date-time-helpers-1.result"
+            },
+            "date_b": {
+              "type": "jsonpath",
+              "value": "$.steps.storage-1.value.notified_date"
+            }
+          }
+        },
+        "trigger": {
+          "title": "Callable Trigger",
+          "connector": {
+            "name": "callable-trigger",
+            "version": "2.0"
+          },
+          "operation": "trigger_and_respond",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "#calling_execution": {
+                "type": "string"
+              },
+              "#calling_workflow": {
+                "type": "string"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "alert": {
+                    "type": "object",
+                    "properties": {
+                      "origin": {
+                        "type": "object",
+                        "properties": {
+                          "workflow_uuid": {
+                            "type": "string"
+                          },
+                          "workflow_url": {
+                            "type": "string"
+                          },
+                          "workflow_title": {
+                            "type": "string"
+                          },
+                          "step_name": {
+                            "type": "string"
+                          },
+                          "step_log_url": {
+                            "type": "string"
+                          },
+                          "connector": {
+                            "type": "string"
+                          },
+                          "user_id": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "error": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string"
+                          },
+                          "created": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "hours": {
+                    "type": "number"
+                  }
+                }
+              },
+              "#calling_execution_log_url": {
+                "type": "string"
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {}
+        }
+      },
+      "dependencies": []
+    }
+  ],
+  "projects": []
+}
