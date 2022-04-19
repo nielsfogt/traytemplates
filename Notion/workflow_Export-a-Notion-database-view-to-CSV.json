@@ -1,0 +1,1242 @@
+ {
+  "tray_export_version": 4,
+  "export_type": "workflow",
+  "workflows": [
+    {
+      "id": "2f6071e8-b1c8-4495-acac-64ec16fb6c43",
+      "created": "2022-04-18T21:07:47.555996Z",
+      "workspace_id": "8cae8982-4613-4c41-b565-e9111674c7bf",
+      "creator": "7de0221f-ff95-4544-803a-ae288b50c77e",
+      "version": {
+        "id": "114e5871-93e9-4b4a-bdb4-2590f81a868b",
+        "created": "2022-04-18T23:58:45.812882Z"
+      },
+      "title": "Export a Notion database view to CSV",
+      "enabled": true,
+      "tags": [],
+      "settings": {
+        "config": {},
+        "input_schema": {},
+        "output_schema": {}
+      },
+      "steps_structure": [
+        {
+          "name": "trigger",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "loop-2",
+          "type": "loop",
+          "content": {
+            "_loop": [
+              {
+                "name": "storage-1",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "script-2",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "boolean-condition-2",
+                "type": "branch",
+                "content": {
+                  "true": [],
+                  "false": [
+                    {
+                      "name": "object-helpers-1",
+                      "type": "normal",
+                      "content": {}
+                    },
+                    {
+                      "name": "storage-4",
+                      "type": "normal",
+                      "content": {}
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "storage-5",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "notion-1",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "script-1",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "storage-2",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "boolean-condition-1",
+                "type": "branch",
+                "content": {
+                  "true": [
+                    {
+                      "name": "break-loop-1",
+                      "type": "break",
+                      "content": {},
+                      "target": "loop-2"
+                    }
+                  ],
+                  "false": []
+                }
+              },
+              {
+                "name": "storage-3",
+                "type": "normal",
+                "content": {}
+              }
+            ]
+          }
+        },
+        {
+          "name": "storage-6",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "call-workflow-1",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "slack-1",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "send-email-1",
+          "type": "normal",
+          "content": {}
+        }
+      ],
+      "steps": {
+        "script-1": {
+          "title": "flatten the database entry",
+          "connector": {
+            "name": "script",
+            "version": "3.3"
+          },
+          "operation": "execute",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "variables": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "data"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.notion-1.response.body.results"
+                    }
+                  }
+                }
+              ]
+            },
+            "script": {
+              "type": "string",
+              "value": "// You can reference the input variables using input.NAME\n// Parsed JSON files could be referenced as fileInput\nexports.step = function(input, fileInput) {\n\n  function typeMap(type) {\n    switch (type) {\n      case ('select'):\n        var map = {\n          type: \"object\",\n          key: [\"name\"]\n        }\n        break\n      case ('files'):\n        var map = {\n          type: \"array\",\n          key: [\"file.url\"]\n        }\n        break\n      case ('files'):\n        var map = {\n          type: \"array\",\n          key: [\"file.url\"]\n        }\n        break\n      case ('multi_select'):\n        var map = {\n          type: \"array\",\n          key: [\"name\"]\n        }\n        break\n      case ('date'):\n        var map = {\n          type: \"object\",\n          key: [\"start\", \"end\"],\n        }\n        break\n      case ('people'):\n        var map = {\n          type: \"array\",\n          key: [\"name\"],\n        }\n        break\n      case ('title'):\n      case ('rich_text'):\n        var map = {\n          type: \"array\",\n          key: [\"plain_text\"],\n        }\n        break\n      case ('tags'):\n        var map = {\n          type: \"array\",\n          key: [\"name\"],\n        }\n        break\n      case ('url'):\n      case ('number'):\n      case ('phone_number'):\n      case ('checkbox'):\n      case ('email'):\n        var map = {\n          type: \"object\",\n          key: null,\n        }\n        break\n      default:\n        var map = null\n    }\n    return map\n  }\n  function keyLoop(object, map) {\n    var result = null\n    map.key.forEach((key, i) => {\n      if (i == 0) {\n        if (map.key.length > 1) {\n          result = key + \": \" + object[key]\n        } else {\n          result = object[key]\n        }\n      } else {\n        result += ', ' + key + \": \" + object[key]\n      }\n    })\n    return result\n  }\n  function flattenRow(data){\n    var row = {\n      url: input.data.url\n    }\n    Object.keys(data.properties).forEach(prop => {\n      var value = data.properties[prop]\n      var map = typeMap(value.type)\n      if(map){\n        if (map.type == \"object\") {\n          if (!map.key) {\n            row[prop] = value[value.type]\n          } else {\n            if(value[value.type]){\n              row[prop] = keyLoop(value[value.type], map)\n            } else {\n              row[prop] = null\n            }\n          }\n        } else if (map.type == \"array\") {\n        row[prop]=_.join(value[value.type].map((item, i) => keyLoop(item, map)),', ')\n        }\n      }\n    })\n    return row\n  }\n  return input.data.map(row=>flattenRow(row))\n};"
+            },
+            "file_output": {
+              "type": "boolean",
+              "value": false
+            }
+          }
+        },
+        "storage-2": {
+          "title": "Save the data",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "append_to_list",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "entries"
+            },
+            "create_if_missing": {
+              "value": true,
+              "type": "boolean"
+            },
+            "value": {
+              "type": "jsonpath",
+              "value": "$.steps.script-1.result"
+            }
+          }
+        },
+        "storage-5": {
+          "title": "Get request body",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "get",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "body"
+            },
+            "default_value": {
+              "type": "jsonpath",
+              "value": "$.steps.script-2.result"
+            }
+          }
+        },
+        "notion-1": {
+          "title": "FIX ME! Get DB entries",
+          "description": "Make sure to put your DB ID in the URL, see:\nhttps://developers.notion.com/reference/post-database-query",
+          "connector": {
+            "name": "notion",
+            "version": "3.0"
+          },
+          "operation": "raw_http_request",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "response": {
+                "type": "object",
+                "properties": {
+                  "status_code": {
+                    "type": "number"
+                  },
+                  "headers": {
+                    "type": "object",
+                    "properties": {
+                      "date": {
+                        "type": "string"
+                      },
+                      "content-type": {
+                        "type": "string"
+                      },
+                      "transfer-encoding": {
+                        "type": "string"
+                      },
+                      "connection": {
+                        "type": "string"
+                      },
+                      "set-cookie": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "x-dns-prefetch-control": {
+                        "type": "string"
+                      },
+                      "x-frame-options": {
+                        "type": "string"
+                      },
+                      "strict-transport-security": {
+                        "type": "string"
+                      },
+                      "x-download-options": {
+                        "type": "string"
+                      },
+                      "x-content-type-options": {
+                        "type": "string"
+                      },
+                      "x-xss-protection": {
+                        "type": "string"
+                      },
+                      "referrer-policy": {
+                        "type": "string"
+                      },
+                      "content-security-policy": {
+                        "type": "string"
+                      },
+                      "x-content-security-policy": {
+                        "type": "string"
+                      },
+                      "x-webkit-csp": {
+                        "type": "string"
+                      },
+                      "etag": {
+                        "type": "string"
+                      },
+                      "vary": {
+                        "type": "string"
+                      },
+                      "cf-cache-status": {
+                        "type": "string"
+                      },
+                      "expect-ct": {
+                        "type": "string"
+                      },
+                      "server": {
+                        "type": "string"
+                      },
+                      "cf-ray": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "body": {
+                    "type": "object",
+                    "properties": {
+                      "object": {
+                        "type": "string"
+                      },
+                      "results": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "object": {
+                              "type": "string"
+                            },
+                            "id": {
+                              "type": "string"
+                            },
+                            "created_time": {
+                              "type": "string"
+                            },
+                            "last_edited_time": {
+                              "type": "string"
+                            },
+                            "created_by": {
+                              "type": "object",
+                              "properties": {
+                                "object": {
+                                  "type": "string"
+                                },
+                                "id": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "last_edited_by": {
+                              "type": "object",
+                              "properties": {
+                                "object": {
+                                  "type": "string"
+                                },
+                                "id": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "cover": {
+                              "type": "null"
+                            },
+                            "icon": {
+                              "type": "null"
+                            },
+                            "parent": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string"
+                                },
+                                "database_id": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "archived": {
+                              "type": "boolean"
+                            },
+                            "properties": {
+                              "type": "object",
+                              "properties": {
+                                "Workflow Description": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "rich_text": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "text": {
+                                            "type": "object",
+                                            "properties": {
+                                              "content": {
+                                                "type": "string"
+                                              },
+                                              "link": {
+                                                "type": [
+                                                  "object",
+                                                  "null"
+                                                ],
+                                                "properties": {
+                                                  "url": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "annotations": {
+                                            "type": "object",
+                                            "properties": {
+                                              "bold": {
+                                                "type": "boolean"
+                                              },
+                                              "italic": {
+                                                "type": "boolean"
+                                              },
+                                              "strikethrough": {
+                                                "type": "boolean"
+                                              },
+                                              "underline": {
+                                                "type": "boolean"
+                                              },
+                                              "code": {
+                                                "type": "boolean"
+                                              },
+                                              "color": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "plain_text": {
+                                            "type": "string"
+                                          },
+                                          "href": {
+                                            "type": [
+                                              "null",
+                                              "string"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "type",
+                                          "text",
+                                          "annotations",
+                                          "plain_text",
+                                          "href"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                },
+                                "Status": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "select": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "color": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "Category": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "select": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "color": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "Workflow org": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "multi_select": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "color": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "color"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                },
+                                "Services": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "multi_select": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "color": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "color"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                },
+                                "wf link": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": [
+                                        "null",
+                                        "string"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "Workflow Name": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "title": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "text": {
+                                            "type": "object",
+                                            "properties": {
+                                              "content": {
+                                                "type": "string"
+                                              },
+                                              "link": {
+                                                "type": [
+                                                  "object",
+                                                  "null"
+                                                ],
+                                                "properties": {
+                                                  "url": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "annotations": {
+                                            "type": "object",
+                                            "properties": {
+                                              "bold": {
+                                                "type": "boolean"
+                                              },
+                                              "italic": {
+                                                "type": "boolean"
+                                              },
+                                              "strikethrough": {
+                                                "type": "boolean"
+                                              },
+                                              "underline": {
+                                                "type": "boolean"
+                                              },
+                                              "code": {
+                                                "type": "boolean"
+                                              },
+                                              "color": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "plain_text": {
+                                            "type": "string"
+                                          },
+                                          "href": {
+                                            "type": [
+                                              "null",
+                                              "string"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "type",
+                                          "text",
+                                          "annotations",
+                                          "plain_text",
+                                          "href"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "url": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "object",
+                            "id",
+                            "created_time",
+                            "last_edited_time",
+                            "created_by",
+                            "last_edited_by",
+                            "cover",
+                            "icon",
+                            "parent",
+                            "archived",
+                            "properties",
+                            "url"
+                          ]
+                        }
+                      },
+                      "next_cursor": {
+                        "type": "string"
+                      },
+                      "has_more": {
+                        "type": "boolean"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "page": {
+                        "type": "object",
+                        "properties": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "authentication": {
+            "group": "13521e72-b1f4-4993-9f64-43257935bbf7",
+            "title": "Niels Fogt's notion account",
+            "service_icon": {
+              "icon_type": "url",
+              "value": "//s3.amazonaws.com/images.tray.io/artisan/icons/4cd2b0e3-495c-4da2-8c32-73aaf1bd1213.png"
+            },
+            "scopes": [],
+            "service_name": "notion",
+            "service_version": 3
+          },
+          "properties": {
+            "method": {
+              "type": "string",
+              "value": "POST"
+            },
+            "include_raw_body": {
+              "type": "boolean",
+              "value": false
+            },
+            "parse_response": {
+              "type": "string",
+              "value": "true"
+            },
+            "url": {
+              "type": "object",
+              "value": {
+                "full_url": {
+                  "type": "string",
+                  "value": "https://api.notion.com/v1/databases/{{REPLACE ME}}/query"
+                }
+              }
+            },
+            "body": {
+              "type": "object",
+              "value": {
+                "raw": {
+                  "type": "jsonpath",
+                  "value": "$.steps.storage-5.value"
+                }
+              }
+            },
+            "headers": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "key": {
+                      "type": "string",
+                      "value": "Notion-Version"
+                    },
+                    "value": {
+                      "type": "string",
+                      "value": "2022-02-22"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "slack-1": {
+          "title": "Send the file",
+          "connector": {
+            "name": "slack",
+            "version": "8.0"
+          },
+          "operation": "send_message",
+          "output_schema": {},
+          "error_handling": {},
+          "authentication": {
+            "group": "f362077b-f587-4970-aa21-9e09174beb86",
+            "title": "Growth Ops Slack Utilities",
+            "service_icon": {
+              "icon_type": "url",
+              "value": "//s3.amazonaws.com/images.tray.io/artisan/icons/c25033a972715dbbdb7e73ac79261230.png"
+            },
+            "scopes": [
+              "users:read.email",
+              "channels:read",
+              "chat:write:user",
+              "channels:write",
+              "groups:read",
+              "users:read",
+              "groups:write",
+              "chat:write:bot",
+              "commands"
+            ],
+            "service_name": "slack",
+            "service_version": 4
+          },
+          "properties": {
+            "link_names": {
+              "type": "boolean",
+              "value": false
+            },
+            "icon_url": {
+              "type": "string",
+              "value": "http://na-ab10.marketo.com/rs/702-NTK-721/images/Autooverlord.jpg"
+            },
+            "reply_broadcast": {
+              "type": "boolean",
+              "value": false
+            },
+            "text": {
+              "type": "string",
+              "value": "<{$.steps.call-workflow-1.response.file.url}|Here's the Notion export>"
+            },
+            "parse": {
+              "type": "string",
+              "value": "none"
+            },
+            "username": {
+              "type": "string",
+              "value": "Automation Overlords™"
+            },
+            "as_user": {
+              "type": "boolean",
+              "value": false
+            },
+            "token": {
+              "type": "jsonpath",
+              "value": "$.auth.access_token"
+            },
+            "channel": {
+              "type": "string",
+              "value": "UKUMB8UQM"
+            }
+          }
+        },
+        "storage-3": {
+          "title": "Set Offset",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "set",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "sfdc_offset"
+            },
+            "value": {
+              "type": "jsonpath",
+              "value": "$.steps.notion-1.response.body.next_cursor"
+            }
+          }
+        },
+        "call-workflow-1": {
+          "title": "Get the csv export",
+          "connector": {
+            "name": "call-workflow",
+            "version": "2.0"
+          },
+          "operation": "fire_and_wait_for_response",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "workflow_id": {
+              "type": "string",
+              "value": "925f5d8b-2433-41cc-93ea-114ce279bd27"
+            },
+            "trigger_input": {
+              "type": "object",
+              "value": {
+                "data": {
+                  "type": "jsonpath",
+                  "value": "$.steps.storage-6.value"
+                },
+                "fileName": {
+                  "type": "string",
+                  "value": "My notion database export"
+                }
+              }
+            }
+          }
+        },
+        "storage-4": {
+          "title": "Save request body",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "set",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "body"
+            },
+            "value": {
+              "type": "jsonpath",
+              "value": "$.steps.object-helpers-1.result"
+            }
+          }
+        },
+        "boolean-condition-1": {
+          "title": "No More Pages?",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "boolean_condition",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "value1": {
+                      "type": "jsonpath",
+                      "value": "$.steps.notion-1.response.body.next_cursor"
+                    },
+                    "comparison_type": {
+                      "type": "string",
+                      "value": "==="
+                    },
+                    "value2": {
+                      "type": "null",
+                      "value": null
+                    }
+                  }
+                }
+              ]
+            },
+            "strictness": {
+              "type": "string",
+              "value": "All"
+            }
+          }
+        },
+        "loop-2": {
+          "title": "Loop Forever (Pages)",
+          "connector": {
+            "name": "loop",
+            "version": "1.1"
+          },
+          "operation": "loop_forever",
+          "output_schema": {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-03/schema",
+            "id": "http://jsonschema.net",
+            "required": true,
+            "properties": {
+              "index": {
+                "type": "number",
+                "id": "http://jsonschema.net/index"
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {}
+        },
+        "storage-1": {
+          "title": "Get Offset",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "get",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "default_value": {
+              "type": "null",
+              "value": null
+            },
+            "key": {
+              "type": "string",
+              "value": "sfdc_offset"
+            }
+          }
+        },
+        "object-helpers-1": {
+          "title": "merge the cursor",
+          "connector": {
+            "name": "object-helpers",
+            "version": "4.1"
+          },
+          "operation": "merge_two_objects",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "result": {
+                "type": "object",
+                "properties": {
+                  "start_cursor": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "source": {
+              "type": "jsonpath",
+              "value": "$.steps.script-2.result"
+            },
+            "target": {
+              "type": "object",
+              "value": {
+                "start_cursor": {
+                  "type": "jsonpath",
+                  "value": "$.steps.storage-1.value"
+                }
+              }
+            }
+          }
+        },
+        "send-email-1": {
+          "title": "FIX ME Send Email",
+          "connector": {
+            "name": "send-email",
+            "version": "4.0"
+          },
+          "operation": "send_text_email",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "tls": {
+              "type": "boolean",
+              "value": false
+            },
+            "to": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "email": {
+                      "type": "string",
+                      "value": ""
+                    }
+                  }
+                }
+              ]
+            },
+            "subject": {
+              "type": "string",
+              "value": "your notion export"
+            },
+            "attachments": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "jsonpath",
+                  "value": "$.steps.call-workflow-1.response.file"
+                }
+              ]
+            }
+          }
+        },
+        "boolean-condition-2": {
+          "title": "Is first page?",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "boolean_condition",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "value1": {
+                      "type": "jsonpath",
+                      "value": "$.steps.storage-1.value"
+                    },
+                    "comparison_type": {
+                      "type": "string",
+                      "value": "==="
+                    },
+                    "value2": {
+                      "type": "null",
+                      "value": null
+                    }
+                  }
+                }
+              ]
+            },
+            "strictness": {
+              "type": "string",
+              "value": "All"
+            }
+          }
+        },
+        "break-loop-1": {
+          "title": "Break Loop 1",
+          "connector": {
+            "name": "break-loop",
+            "version": "1.0"
+          },
+          "operation": "break",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {}
+        },
+        "storage-6": {
+          "title": "Get the data",
+          "connector": {
+            "name": "storage",
+            "version": "1.4"
+          },
+          "operation": "get",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "scope": {
+              "type": "string",
+              "value": "Current Run"
+            },
+            "key": {
+              "type": "string",
+              "value": "entries"
+            },
+            "default_value": {
+              "type": "null",
+              "value": null
+            }
+          }
+        },
+        "script-2": {
+          "title": "READ/FIX ME",
+          "description": "Setup filters matching view, see: https://developers.notion.com/reference/post-database-query-filter#compound-filter-object",
+          "connector": {
+            "name": "script",
+            "version": "3.3"
+          },
+          "operation": "execute",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "variables": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "status"
+                    },
+                    "value": {
+                      "type": "string",
+                      "value": "Deprecated"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "propertyName"
+                    },
+                    "value": {
+                      "type": "string",
+                      "value": "Status"
+                    }
+                  }
+                }
+              ]
+            },
+            "script": {
+              "type": "string",
+              "value": "// You can reference the input variables using input.NAME\n// Parsed JSON files could be referenced as fileInput\nexports.step = function(input, fileInput) {\n\treturn {\n    \"filter\": {\n        \"and\": [\n            {\n                \"property\": input.propertyName,\n                \"select\": {\n                    \"equals\": input.status\n                }\n            }\n        ]\n    }\n}\n};"
+            },
+            "file_output": {
+              "type": "boolean",
+              "value": false
+            }
+          }
+        },
+        "trigger": {
+          "title": "Manual Trigger",
+          "connector": {
+            "name": "noop",
+            "version": "1.1"
+          },
+          "operation": "trigger",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "result": {
+                "type": "object",
+                "properties": {
+                  "Email": {
+                    "type": "string",
+                    "title": "Email"
+                  }
+                }
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {}
+        }
+      },
+      "dependencies": [
+        {
+          "id": "925f5d8b-2433-41cc-93ea-114ce279bd27",
+          "name": "[CSVs] Utility - Add data to CSV and get downloadable URL"
+        }
+      ]
+    }
+  ],
+  "projects": []
+}
