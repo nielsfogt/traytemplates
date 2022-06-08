@@ -1,0 +1,1033 @@
+ {
+  "tray_export_version": 4,
+  "export_type": "workflow",
+  "workflows": [
+    {
+      "id": "8e48211c-b994-4971-986f-00caea1b6209",
+      "created": "2022-06-07T22:04:55.344783Z",
+      "workspace_id": "eb92f57d-2813-4331-bd17-0a3e60bafdbc",
+      "creator": "7de0221f-ff95-4544-803a-ae288b50c77e",
+      "version": {
+        "id": "4995df46-82a3-45cc-9ad1-09aac1b4bcfd",
+        "created": "2022-06-08T00:16:41.064976Z"
+      },
+      "title": "[Growth] List Helpers 2 - Venn list compare 2.0",
+      "description": "This operation allows you to compare two lists to see which items are uniquely in each one vs. shared.\n\nBy default it will do a direct comparison for 100% equality of all items in the list, however if you pass a collection, you can optionally provide a key by which to compare the items and it will only compare them based upon the shared values of the specific key.",
+      "enabled": true,
+      "tags": [],
+      "settings": {
+        "config": {
+          "tray_revenue_ops_id": "0054H00000672GaQAI",
+          "marketo_ops_admin_id": "00558000003naaLAAQ"
+        },
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "comparisonMethod": {
+              "title": "Comparison method?",
+              "type": "string",
+              "enum": [
+                {
+                  "text": "Simple",
+                  "value": "Simple"
+                },
+                {
+                  "text": "Collection by key",
+                  "value": "byKey"
+                }
+              ]
+            },
+            "list_one": {
+              "title": "List one",
+              "type": "array",
+              "items": {
+                "title": "Item",
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "title": "string"
+                  },
+                  {
+                    "title": "object",
+                    "type": "object",
+                    "properties": {},
+                    "additionalProperties": false,
+                    "required": [],
+                    "advanced": []
+                  }
+                ]
+              },
+              "additionalItems": true
+            },
+            "list_two": {
+              "title": "List two",
+              "type": "array",
+              "items": {
+                "title": "Item",
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "title": "string"
+                  },
+                  {
+                    "title": "object",
+                    "type": "object",
+                    "properties": {},
+                    "additionalProperties": false,
+                    "required": [],
+                    "advanced": []
+                  }
+                ]
+              },
+              "additionalItems": true
+            },
+            "key": {
+              "title": "key",
+              "type": "string"
+            },
+            "sharedStyle": {
+              "title": "Shared list style",
+              "type": "string",
+              "description": "How would you like the items from your shared list returned? We can merge all unique key/values or return the values only from one of the two lists your provided.",
+              "enum": [
+                {
+                  "text": "Merge items",
+                  "value": "merge"
+                },
+                {
+                  "text": "List one values only",
+                  "value": "listOne"
+                },
+                {
+                  "text": "List two values only",
+                  "value": "listTwo"
+                }
+              ],
+              "default": "merge"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "comparisonMethod"
+          ],
+          "advanced": []
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "sharedItems": {
+              "title": "Shared Items",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "title": "Item"
+              },
+              "additionalItems": true
+            },
+            "exclusiveItems": {
+              "title": "Exclusive Items",
+              "type": "object",
+              "properties": {
+                "listOne": {
+                  "title": "List One",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "title": "Item"
+                  },
+                  "additionalItems": true
+                },
+                "listTwo": {
+                  "title": "List Two",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "title": "Item"
+                  },
+                  "additionalItems": true
+                }
+              },
+              "additionalProperties": false,
+              "required": [],
+              "advanced": []
+            },
+            "success": {
+              "title": "Success",
+              "type": "boolean",
+              "default": true
+            },
+            "message": {
+              "title": "Message",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "success"
+          ],
+          "advanced": []
+        }
+      },
+      "steps_structure": [
+        {
+          "name": "trigger",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "list-helpers-10",
+          "type": "normal",
+          "content": {}
+        },
+        {
+          "name": "boolean-condition-3",
+          "type": "branch",
+          "content": {
+            "true": [
+              {
+                "name": "boolean-condition-4",
+                "type": "branch",
+                "content": {
+                  "true": [
+                    {
+                      "name": "list-helpers-12",
+                      "type": "normal",
+                      "content": {}
+                    },
+                    {
+                      "name": "list-helpers-3",
+                      "type": "normal",
+                      "content": {}
+                    },
+                    {
+                      "name": "lodash-1",
+                      "type": "normal",
+                      "content": {}
+                    },
+                    {
+                      "name": "list-helpers-13",
+                      "type": "normal",
+                      "content": {}
+                    },
+                    {
+                      "name": "boolean-condition-5",
+                      "type": "branch",
+                      "content": {
+                        "true": [
+                          {
+                            "name": "data-mapper-1",
+                            "type": "normal",
+                            "content": {}
+                          },
+                          {
+                            "name": "script-1",
+                            "type": "normal",
+                            "content": {}
+                          },
+                          {
+                            "name": "callable-workflow-response-4",
+                            "type": "normal",
+                            "content": {}
+                          }
+                        ],
+                        "false": [
+                          {
+                            "name": "callable-workflow-response-3",
+                            "type": "normal",
+                            "content": {}
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "false": [
+                    {
+                      "name": "callable-workflow-response-2",
+                      "type": "normal",
+                      "content": {}
+                    }
+                  ]
+                }
+              }
+            ],
+            "false": [
+              {
+                "name": "list-helpers-1",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "list-helpers-7",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "list-helpers-2",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "list-helpers-11",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "list-helpers-8",
+                "type": "normal",
+                "content": {}
+              },
+              {
+                "name": "callable-workflow-response-1",
+                "type": "normal",
+                "content": {}
+              }
+            ]
+          }
+        }
+      ],
+      "steps": {
+        "data-mapper-1": {
+          "title": "Map secondary list",
+          "connector": {
+            "name": "data-mapper",
+            "version": "3.5"
+          },
+          "operation": "map_one_value",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "result": {
+                "type": "null"
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "mappings": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "from": {
+                      "type": "string",
+                      "value": "listOne"
+                    },
+                    "to": {
+                      "type": "string",
+                      "value": "listTwo"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "from": {
+                      "type": "string",
+                      "value": "listTwo"
+                    },
+                    "to": {
+                      "type": "string",
+                      "value": "listOne"
+                    }
+                  }
+                }
+              ]
+            },
+            "value": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.sharedStyle"
+            },
+            "default_value": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.sharedStyle"
+            }
+          }
+        },
+        "list-helpers-7": {
+          "title": "difference 2nd",
+          "connector": {
+            "name": "list-helpers",
+            "version": "1.9"
+          },
+          "operation": "difference",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.list_two"
+            },
+            "filter_list": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.list_one"
+            }
+          }
+        },
+        "boolean-condition-5": {
+          "title": "all items have key?",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "boolean_condition",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "value1": {
+                      "type": "jsonpath",
+                      "value": "$.steps.list-helpers-12.result"
+                    },
+                    "comparison_type": {
+                      "type": "string",
+                      "value": "==="
+                    },
+                    "value2": {
+                      "type": "jsonpath",
+                      "value": "$.steps.list-helpers-13.result"
+                    }
+                  }
+                }
+              ]
+            },
+            "strictness": {
+              "type": "string",
+              "value": "All"
+            }
+          }
+        },
+        "boolean-condition-4": {
+          "title": "Has key specified?",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "property_exists",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "property": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.key"
+            }
+          }
+        },
+        "list-helpers-11": {
+          "title": "distinct",
+          "connector": {
+            "name": "list-helpers",
+            "version": "1.9"
+          },
+          "operation": "remove_duplicates",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.list-helpers-10.result"
+            }
+          }
+        },
+        "callable-workflow-response-2": {
+          "title": "Callable response",
+          "connector": {
+            "name": "callable-workflow-response",
+            "version": "1.0"
+          },
+          "operation": "response",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "response": {
+              "value": {
+                "success": {
+                  "value": false,
+                  "type": "boolean"
+                },
+                "message": {
+                  "type": "string",
+                  "value": "You must provide a key to compare the collections by for this operation."
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "callable-workflow-response-4": {
+          "title": "Callable response",
+          "connector": {
+            "name": "callable-workflow-response",
+            "version": "1.0"
+          },
+          "operation": "response",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "response": {
+              "value": {
+                "success": {
+                  "value": true,
+                  "type": "boolean"
+                },
+                "message": {
+                  "type": "string",
+                  "value": "Successfully compared your lists."
+                },
+                "sharedItems": {
+                  "type": "jsonpath",
+                  "value": "$.steps.script-1.result.sharedItems"
+                },
+                "exclusiveItems": {
+                  "value": {
+                    "listOne": {
+                      "type": "jsonpath",
+                      "value": "$.steps.script-1.result.listOneExclusive"
+                    },
+                    "listTwo": {
+                      "type": "jsonpath",
+                      "value": "$.steps.script-1.result.listTwoExclusive"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "list-helpers-2": {
+          "title": "exclusive items",
+          "connector": {
+            "name": "list-helpers",
+            "version": "1.9"
+          },
+          "operation": "concatenate",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.list-helpers-1.result"
+            },
+            "list_two": {
+              "type": "jsonpath",
+              "value": "$.steps.list-helpers-7.result"
+            }
+          }
+        },
+        "script-1": {
+          "title": "compare",
+          "connector": {
+            "name": "script",
+            "version": "3.3"
+          },
+          "operation": "execute",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "result": {
+                "type": "object",
+                "properties": {
+                  "sharedItems": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "prop": {
+                          "type": "boolean"
+                        },
+                        "prop2": {
+                          "type": "boolean"
+                        },
+                        "prop3": {
+                          "type": "number"
+                        },
+                        "prop4": {
+                          "type": "object",
+                          "properties": {
+                            "key": {
+                              "type": "boolean"
+                            }
+                          }
+                        },
+                        "key": {
+                          "type": "boolean"
+                        },
+                        "key2": {
+                          "type": "boolean"
+                        },
+                        "key3": {
+                          "type": "number"
+                        },
+                        "key4": {
+                          "type": "object",
+                          "properties": {
+                            "key": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "prop",
+                        "prop2",
+                        "prop3",
+                        "prop4",
+                        "key",
+                        "key2",
+                        "key3",
+                        "key4"
+                      ]
+                    }
+                  },
+                  "listOneExclusive": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "prop": {
+                          "type": "boolean"
+                        },
+                        "prop2": {
+                          "type": "boolean"
+                        },
+                        "prop3": {
+                          "type": "number"
+                        },
+                        "prop4": {
+                          "type": "object",
+                          "properties": {
+                            "key": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "listTwoExclusive": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "key": {
+                          "type": "boolean"
+                        },
+                        "key2": {
+                          "type": "boolean"
+                        },
+                        "key3": {
+                          "type": "number"
+                        },
+                        "key4": {
+                          "type": "object",
+                          "properties": {
+                            "key": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "console": {
+                "type": "array",
+                "items": {}
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {
+            "variables": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "listOne"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.trigger.data.list_one"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "listTwo"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.trigger.data.list_two"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "key"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.trigger.data.key"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "primaryList"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.trigger.data.sharedStyle"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "name": {
+                      "type": "string",
+                      "value": "secondaryList"
+                    },
+                    "value": {
+                      "type": "jsonpath",
+                      "value": "$.steps.data-mapper-1.result"
+                    }
+                  }
+                }
+              ]
+            },
+            "script": {
+              "type": "string",
+              "value": "// You can reference the input variables using input.NAME\n// Parsed JSON files could be referenced as fileInput\nexports.step = function(input, fileInput) {\n\tfunction shareditems(primaryList, secondaryList) {\n    return primaryList.filter(item => {\n      return secondaryList.map(item => item[input.key]).includes(item[input.key]) === true\n    })\n  }\n\n  function excluldedItems(primaryList) {\n    return primaryList.filter(item => {\n      return shared.map(item => item[input.key]).includes(item[input.key]) == false\n    })\n  }\n\n  if (input.primaryList != \"merge\") {\n    var shared = shareditems(input[input.primaryList], input[input.secondaryList])\n  } else {\n    var listOneShared = shareditems(input.listOne, input.listTwo)\n    var listTwoShared = shareditems(input.listTwo, input.listOne)\n    var shared = listOneShared.map(item => _.merge(item, listTwoShared.filter(item2 => item2[input.key] == item[input.key])[0]))\n  }\n\n  return {\n    sharedItems: shared,\n    listOneExclusive: excluldedItems(input.listOne),\n    listTwoExclusive: excluldedItems(input.listTwo),\n    }\n};"
+            },
+            "file_output": {
+              "type": "boolean",
+              "value": false
+            }
+          }
+        },
+        "callable-workflow-response-1": {
+          "title": "Callable response",
+          "connector": {
+            "name": "callable-workflow-response",
+            "version": "1.0"
+          },
+          "operation": "response",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "response": {
+              "value": {
+                "sharedItems": {
+                  "type": "jsonpath",
+                  "value": "$.steps.list-helpers-8.result"
+                },
+                "exclusiveItems": {
+                  "value": {
+                    "listOne": {
+                      "type": "jsonpath",
+                      "value": "$.steps.list-helpers-1.result"
+                    },
+                    "listTwo": {
+                      "type": "jsonpath",
+                      "value": "$.steps.list-helpers-7.result"
+                    }
+                  },
+                  "type": "object"
+                },
+                "success": {
+                  "value": true,
+                  "type": "boolean"
+                },
+                "message": {
+                  "type": "string",
+                  "value": "Successfully compared your lists."
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "list-helpers-3": {
+          "title": "All key's values",
+          "connector": {
+            "name": "list-helpers",
+            "version": "1.9"
+          },
+          "operation": "pluck",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.list-helpers-10.result"
+            },
+            "key": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.key"
+            }
+          }
+        },
+        "list-helpers-13": {
+          "title": "count all keys",
+          "connector": {
+            "name": "list-helpers",
+            "version": "2.1"
+          },
+          "operation": "count_items",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.lodash-1.result"
+            }
+          }
+        },
+        "list-helpers-1": {
+          "title": "difference 1st",
+          "connector": {
+            "name": "list-helpers",
+            "version": "1.9"
+          },
+          "operation": "difference",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.list_one"
+            },
+            "filter_list": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.list_two"
+            }
+          }
+        },
+        "list-helpers-10": {
+          "title": "all items",
+          "connector": {
+            "name": "list-helpers",
+            "version": "1.9"
+          },
+          "operation": "concatenate",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.list_one"
+            },
+            "list_two": {
+              "type": "jsonpath",
+              "value": "$.steps.trigger.data.list_two"
+            }
+          }
+        },
+        "list-helpers-8": {
+          "title": "shared items",
+          "connector": {
+            "name": "list-helpers",
+            "version": "1.9"
+          },
+          "operation": "difference",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.list-helpers-11.result"
+            },
+            "filter_list": {
+              "type": "jsonpath",
+              "value": "$.steps.list-helpers-2.result"
+            }
+          }
+        },
+        "lodash-1": {
+          "title": "remove null",
+          "connector": {
+            "name": "lodash",
+            "version": "1.0"
+          },
+          "operation": "call_operation",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "operation_name": {
+              "type": "string",
+              "value": "compact"
+            },
+            "parameters": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "jsonpath",
+                  "value": "$.steps.list-helpers-3.result"
+                }
+              ]
+            }
+          }
+        },
+        "list-helpers-12": {
+          "title": "count all items",
+          "connector": {
+            "name": "list-helpers",
+            "version": "2.1"
+          },
+          "operation": "count_items",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "list": {
+              "type": "jsonpath",
+              "value": "$.steps.list-helpers-10.result"
+            }
+          }
+        },
+        "boolean-condition-3": {
+          "title": "by key collection?",
+          "connector": {
+            "name": "boolean-condition",
+            "version": "2.3"
+          },
+          "operation": "boolean_condition",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "value1": {
+                      "type": "jsonpath",
+                      "value": "$.steps.trigger.data.comparisonMethod"
+                    },
+                    "comparison_type": {
+                      "type": "string",
+                      "value": "==="
+                    },
+                    "value2": {
+                      "type": "string",
+                      "value": "byKey"
+                    }
+                  }
+                }
+              ]
+            },
+            "strictness": {
+              "type": "string",
+              "value": "All"
+            }
+          }
+        },
+        "callable-workflow-response-3": {
+          "title": "Callable response",
+          "connector": {
+            "name": "callable-workflow-response",
+            "version": "1.0"
+          },
+          "operation": "response",
+          "output_schema": {},
+          "error_handling": {},
+          "properties": {
+            "response": {
+              "value": {
+                "success": {
+                  "value": false,
+                  "type": "boolean"
+                },
+                "message": {
+                  "type": "string",
+                  "value": "Not all items in both your lists share the key `{$.steps.trigger.data.key}`, this operation only supports collections where each item in each collection shares a key."
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "trigger": {
+          "title": "Callable Trigger",
+          "connector": {
+            "name": "callable-trigger",
+            "version": "2.0"
+          },
+          "operation": "trigger_and_respond",
+          "output_schema": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "comparisonType": {
+                    "type": "string"
+                  },
+                  "list_one": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "list_two": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "#calling_workflow": {
+                "type": "string"
+              },
+              "#calling_execution": {
+                "type": "string"
+              },
+              "#calling_execution_log_url": {
+                "type": "string"
+              }
+            }
+          },
+          "error_handling": {},
+          "properties": {}
+        }
+      },
+      "dependencies": []
+    }
+  ],
+  "projects": []
+}
